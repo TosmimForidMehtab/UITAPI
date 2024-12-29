@@ -31,6 +31,9 @@ export const signIn = async (req, res, next) => {
             throw new ApiError(404, `Invalid credentials`);
         }
 
+        if(validUser.role !== role) {
+            throw new ApiError(401, "Unauthorized role access");
+        }
         const validPassword = await validUser.isPasswordCorrect(password);
         if (!validPassword) {
             throw new ApiError(401, "Invalid credentials");
