@@ -33,7 +33,7 @@ const authSchema = new Schema({
         },
         default: "USER",
     },
-});
+}, { timestamps: true });
 
 authSchema.pre("save", async function (next) {
     if (!this.isModified("password")) {

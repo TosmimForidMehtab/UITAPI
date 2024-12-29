@@ -28,7 +28,7 @@ export const signIn = async (req, res, next) => {
     try {
         const validUser = await Auth.findOne({ email });
         if (!validUser) {
-            throw new ApiError(404, `Invalid credentials`);
+            throw new ApiError(404, `Please sign up first`);
         }
 
         if(validUser.role !== role) {
