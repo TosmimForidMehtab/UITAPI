@@ -1,6 +1,7 @@
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Auth } from "./auth.model.js";
+import {createDenominations, createWallet, getDenominations} from "../wallet/wallet.service.js";
 
 export const signUp = async (req, res, next) => {
     const { email, role, password } = req.body;
@@ -11,6 +12,14 @@ export const signUp = async (req, res, next) => {
         }
         const response = await Auth.create({ email, role, password });
         const { password: _, ...user } = response._doc;
+        if(response.role === "USER") await createWallet(user);
+        if(response.role === 'ADMIN'){
+            const denominations = await getDenominations();
+            const defaultDenominations = [100, 500, 1000, 2000];
+            if (denominations?.length === 0) {
+                await Promise.all(defaultDenominations.map(amount => createDenominations(amount)));
+            }
+        }
         return res
             .status(200)
             .json(new ApiResponse(200, "User created successfully"));
