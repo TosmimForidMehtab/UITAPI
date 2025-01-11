@@ -47,7 +47,7 @@ authSchema.pre("save", async function (next) {
 });
 
 authSchema.methods.generateAccessToken = function () {
-    return jwt.sign({ _id: this._id, role: this.role }, process.env.JWT_SECRET, {
+    return jwt.sign({ _id: this._id, role: this.role, email:this.email }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_EXPIRY,
     });
 };
