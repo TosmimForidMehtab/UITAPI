@@ -33,7 +33,7 @@ export const createTransaction = async (req, res, next) => {
 
 export const getAllTransactions = async (req, res, next) => {
     try {
-        const transactions = await Transaction.find({}).sort({createdAt: -1});
+        const transactions = await Transaction.find({}).sort({createdAt: -1}).populate('user', 'email _id');
         return res
             .status(200)
             .json(new ApiResponse(200, "Transactions fetched successfully", transactions));
