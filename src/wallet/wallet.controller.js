@@ -88,6 +88,18 @@ export const getUpis = async (req, res, next) => {
 	}
 };
 
+export const getUpi = async (req, res, next) => {
+	const user = req.user;
+	try {
+		const upi = await getUpiById(user._id);
+		return res
+			.status(200)
+			.json(new ApiResponse(200, "Upi fetched successfully", upi));
+	} catch (error) {
+		next(error);
+	}
+};
+
 export const getDenominations = async (req, res, next) => {
 	try {
 		const denominations = await getDenominationsService();
