@@ -22,7 +22,7 @@ const upiSchema = new mongoose.Schema({
         ref: "Auth",
         required: true,
     },
-});
+}, { timestamps: true });
 
 const denominations = new mongoose.Schema({
     amount: {

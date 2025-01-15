@@ -29,7 +29,7 @@ export const createUpi = async (userId, upiId) => {
 };
 
 export const getUpis = async () => {
-	return await Upi.find({}).select("-user");
+	return await Upi.find({}).select("-user").sort({ updatedAt: -1 });
 };
 
 export const updateUpi = async (userId, upiId) => {
