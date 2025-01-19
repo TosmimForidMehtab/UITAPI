@@ -7,6 +7,7 @@ import authRoutes from "./auth/auth.routes.js";
 import userRoutes from "./users/user.routes.js";
 import transactionRoutes from "./transactons/transaction.routes.js";
 import walletRoutes from "./wallet/wallet.routes.js";
+import plansRoutes from "./plans/plans.routes.js";
 
 const app = express();
 const corsOptions = {
@@ -30,6 +31,7 @@ app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
 app.use("/api/v1/transactions", transactionRoutes);
 app.use("/api/v1/wallet", walletRoutes);
+app.use("/api/v1/plans", plansRoutes);
 
 app.use(errorHandler);
 

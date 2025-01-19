@@ -33,6 +33,12 @@ const authSchema = new Schema({
         },
         default: "USER",
     },
+    activePlan: {
+        type: String
+    },
+    planExpiry: {
+        type: Date
+    }
 }, { timestamps: true });
 
 authSchema.pre("save", async function (next) {

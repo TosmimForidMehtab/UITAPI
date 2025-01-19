@@ -2,6 +2,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Auth } from "./auth.model.js";
 import {createDenominations, createWallet, getDenominations} from "../wallet/wallet.service.js";
+import { isPlanExpired } from "../plans/plans.service.js";
 
 export const signUp = async (req, res, next) => {
     const { email, role, password } = req.body;
@@ -49,6 +50,9 @@ export const signIn = async (req, res, next) => {
         }
         const { password: _, ...rest } = validUser._doc;
         const accessToken = validUser.generateAccessToken();
+        if(validUser.role === "USER"){
+            await isPlanExpired(validUser?.activePlan, validUser._id);
+        }
         return res
             .status(200)
             .json(
