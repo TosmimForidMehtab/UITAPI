@@ -81,3 +81,23 @@ export const activatePlan = async (req, res, next) => {
         next(error);
     }
 };
+
+export const getActivePlanDetails = async (req, res, next) => {
+    const user = req.user;
+    try {
+        await isPlanExpired(user.activePlan, user._id);
+        const currentUser = await Auth.findById(user._id);
+        const plan = await Plan.findById(currentUser.activePlan);
+        const expiryDate = currentUser?.planExpiry ? dayjs(currentUser.planExpiry) : null;
+        const remainingDays = expiryDate ? expiryDate.diff(dayjs(), 'day') : 0;
+        const response = {
+            plan,
+            remainingDays,
+        }
+        return res
+            .status(200)
+            .json(new ApiResponse(200, "Plan fetched successfully", response));
+    } catch (error) {
+        next(error);
+    }
+};
