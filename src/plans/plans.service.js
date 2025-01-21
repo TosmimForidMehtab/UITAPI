@@ -1,4 +1,4 @@
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { Plan } from './plans.model.js';
 import { Auth } from '../auth/auth.model.js';
 

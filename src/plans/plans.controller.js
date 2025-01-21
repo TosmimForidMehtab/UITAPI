@@ -5,7 +5,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { generateTransactionId } from "../utils/generateTId.js";
 import { getWallet, updateWallet } from "../wallet/wallet.service.js";
 import { Plan } from "./plans.model.js";
-import * as dayjs from "dayjs";
+import dayjs from "dayjs";
 import { isPlanExpired } from "./plans.service.js";
 
 export const getPlans = async (req, res, next) => {
