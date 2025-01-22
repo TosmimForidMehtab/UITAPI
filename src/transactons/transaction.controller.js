@@ -3,6 +3,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { ApiError } from "../utils/ApiError.js";
 import { getDenominationById, updateWallet } from "../wallet/wallet.service.js";
 import { generateTransactionId } from "../utils/generateTId.js";
+import { Auth } from "../auth/auth.model.js";
 
 export const getMyTransactions = async (req, res, next) => {
 	try {
@@ -34,6 +35,22 @@ export const createTransaction = async (req, res, next) => {
 		let tId;
 		if(type === 'WITHDRAWAL'){
 			tId = generateTransactionId()
+		}
+		const currentUser = await Auth.findById(user._id);
+		if(currentUser?.referredBy){
+			const referredByUser = Auth.findById(user.referredBy);
+			if(Number(value) >= 2000){
+				await Transaction.create({
+					amount: 200,
+					user: referredByUser._id,
+					transactionId: generateTransactionId('REFERRAL'),
+					type: "DEPOSIT",
+					status: "COMPLETED",
+				})
+				await updateWallet(referredByUser._id, 200);
+				currentUser.referredBy = null;
+				await currentUser.save();
+			}
 		}
 		const transaction = await Transaction.create({
 			amount: value,

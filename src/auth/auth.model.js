@@ -38,6 +38,13 @@ const authSchema = new Schema({
     },
     planExpiry: {
         type: Date
+    },
+    referralCode: {
+        type: String,
+        unique: true,
+    },
+    referredBy: {
+        type: String
     }
 }, { timestamps: true });
 

@@ -3,15 +3,26 @@ import { ApiError } from "../utils/ApiError.js";
 import { Auth } from "./auth.model.js";
 import {createDenominations, createWallet, getDenominations} from "../wallet/wallet.service.js";
 import { isPlanExpired } from "../plans/plans.service.js";
+import { generateReferralCode } from "../utils/generateRefCode.js";
 
 export const signUp = async (req, res, next) => {
     const { email, role, password } = req.body;
+    const {referralCode} = req.query;
     try {
         const userExists = await Auth.findOne({ email });
         if (userExists) {
             throw new ApiError(400, `User already exists`);
         }
-        const response = await Auth.create({ email, role, password });
+
+        const response = await Auth.create({ email, role, password, referralCode: generateReferralCode() });
+        if (referralCode && role === "USER") {
+            const referredUser = await Auth.findOne({ referralCode });
+            if (!referredUser) {
+                throw new ApiError(400, "Invalid referral code");
+            }
+            response.referredBy = referredUser._id;
+            await response.save();
+        }
         const { password: _, ...user } = response._doc;
         if(response.role === "USER") await createWallet(user);
         if(response.role === 'ADMIN'){

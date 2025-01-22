@@ -7,7 +7,6 @@ export const createWallet = async (userId) => {
 };
 
 export const updateWallet = async (userId, amount) => {
-	console.log(amount, userId);
 	const wallet = await Wallet.findOne({ user: userId });
 	if (wallet.balance + amount < 0) {
 		throw new ApiError(400, "Insufficient balance");
