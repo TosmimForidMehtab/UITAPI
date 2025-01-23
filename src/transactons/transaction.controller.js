@@ -38,7 +38,7 @@ export const createTransaction = async (req, res, next) => {
 		}
 		const currentUser = await Auth.findById(user._id);
 		if(currentUser?.referredBy){
-			const referredByUser = Auth.findById(user.referredBy);
+			const referredByUser = await Auth.findById(currentUser.referredBy).select('-password');
 			if(Number(value) >= 2000){
 				await Transaction.create({
 					amount: 200,

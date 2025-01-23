@@ -22,7 +22,7 @@ export const getReferralUrl = async (req, res, next) => {
         }
 
         const baseUrl = process.env.FRONTEND_URL;
-        const referralUrl = `${baseUrl}?refer=${user?.referralCode || ""}`;
+        const referralUrl = `${baseUrl}/signup?refer=${user?.referralCode || ""}`;
         const referCode = user?.referralCode || "";
         return res
             .status(200)
