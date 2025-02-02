@@ -16,7 +16,22 @@ const planSchema = new mongoose.Schema({
     duration: {
         type: Number,
         required: true,
-    }
+    },
+    type:{
+        type: String,
+        enum: {
+            values: ["RUNNING", "UPCOMING", "EXPIRED"],
+            message: "{VALUE} is not supported",
+        },
+        default: "RUNNING"
+    },
+    logo:{
+        type: String,
+        default: ''
+    },
+    returnPercentage: {
+        type: Number
+    },
 }, { timestamps: true });
 
 export const Plan = mongoose.model("Plan", planSchema);

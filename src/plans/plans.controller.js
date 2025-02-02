@@ -7,6 +7,8 @@ import { getWallet, updateWallet } from "../wallet/wallet.service.js";
 import { Plan } from "./plans.model.js";
 import dayjs from "dayjs";
 import { isPlanExpired } from "./plans.service.js";
+import { uploadOnCloudinary } from "../utils/cloudinaryUpload.js";
+import { createPortfolio } from "../portfolio/portfolio.service.js";
 
 export const getPlans = async (req, res, next) => {
     try {
@@ -20,9 +22,25 @@ export const getPlans = async (req, res, next) => {
 };
 
 export const createPlan = async (req, res, next) => {
-    const { name, price, description, duration } = req.body;
+    const { name, price, description, duration, type, returnPercentage } = req.body;
     try {
-        const plan = await Plan.create({ name, price, description, duration });
+        if (!req.file) {
+            return next(new ApiError(400, "Logo is required"));
+        }
+
+        const logoUrl = await uploadOnCloudinary(req.file.path);
+        if (!logoUrl) {
+            return next(new ApiError(500, "Failed to upload logo"));
+        }
+        const plan = await Plan.create({ 
+            name, 
+            price, 
+            description, 
+            duration, 
+            logo: logoUrl,
+            type,
+            returnPercentage
+        });
         return res
             .status(201)
             .json(new ApiResponse(201, "Plan created successfully"));
@@ -72,8 +90,10 @@ export const activatePlan = async (req, res, next) => {
         })
         await updateWallet(user._id, -plan.price);
         currentUser.activePlan = plan._id;
-        currentUser.planExpiry = dayjs().add(plan.duration, 'month').toDate();
+        currentUser.planExpiry = dayjs().add(plan.duration, 'day').toDate();
         await currentUser.save();
+        const todayEarning = Number((plan.price * plan.returnPercentage / 100)/ plan.duration);
+        await createPortfolio(user._id, plan._id, dayjs().toDate(), plan.price, todayEarning, todayEarning, "ACTIVE");
         return res
             .status(200)
             .json(new ApiResponse(200, "Plan activated successfully"));
