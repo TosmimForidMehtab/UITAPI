@@ -8,14 +8,26 @@ import { Plan } from "./plans.model.js";
 import dayjs from "dayjs";
 import { isPlanExpired } from "./plans.service.js";
 import { uploadOnCloudinary } from "../utils/cloudinaryUpload.js";
-import { createPortfolio } from "../portfolio/portfolio.service.js";
+import { createPortfolio } from "../portfolio/portfolio.controller.js";
 
 export const getPlans = async (req, res, next) => {
     try {
-        const plans = await Plan.find();
+        const { page = 1, limit = 10 } = req.query; // Default to page 1, limit 10
+
+        const plans = await Plan.find()
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit));
+
+        const totalPlans = await Plan.countDocuments();
+
         return res
             .status(200)
-            .json(new ApiResponse(200, "Plans fetched successfully", plans));
+            .json(new ApiResponse(200, "Plans fetched successfully", {
+                plans,
+                currentPage: parseInt(page),
+                totalPages: Math.ceil(totalPlans / limit),
+                totalPlans
+            }));
     } catch (error) {
         next(error);
     }
@@ -92,7 +104,7 @@ export const activatePlan = async (req, res, next) => {
         currentUser.activePlan = plan._id;
         currentUser.planExpiry = dayjs().add(plan.duration, 'day').toDate();
         await currentUser.save();
-        const todayEarning = Number((plan.price * plan.returnPercentage / 100)/ plan.duration);
+        const todayEarning = Number(plan.price) / Number(plan.duration);
         await createPortfolio(user._id, plan._id, dayjs().toDate(), plan.price, todayEarning, todayEarning, "ACTIVE");
         return res
             .status(200)

@@ -30,7 +30,7 @@ const portfolioSchema = new mongoose.Schema({
    status: {
        type: String,
        enum: {
-           values: ["ACTIVE", "SOLD OUT"],
+           values: ["ACTIVE", "SOLDOUT"],
            message: "{VALUE} is not supported",
        },
        default: "ACTIVE"
