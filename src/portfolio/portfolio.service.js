@@ -1,3 +1,4 @@
+import { updateWallet } from "../wallet/wallet.service.js";
 import { Portfolio } from "./portfolio.model.js";
 
 export const updateTodayEarnings = async () => {
@@ -25,6 +26,7 @@ export const updateTodayEarnings = async () => {
                     { _id: portfolio._id },
                     { $set: { status: "SOLDOUT" } }
                 );
+                await updateWallet(portfolio.user, Number(portfolio.totalEarning));
             }
         }
 
